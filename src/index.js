@@ -56,10 +56,9 @@ const genDiff = (json1, json2) => {
   const sortedDiff = _.sortBy(generalDiff, '0');
   const signedDiff = sortedDiff.map(([key, value, sign]) => [`${sign} ${key}`, value]);
 
-  const resultStirng = JSON.stringify(_.fromPairs(signedDiff), null, 2).replace(
-    /"([^"]+)":/g,
-    '$1:'
-  );
+  const resultStirng = JSON.stringify(_.fromPairs(signedDiff), null, 2)
+    .replace(/"*([^"]+)"/g, '$1')
+    .replace(/([^,]+),/g, '$1');
 
   return resultStirng;
 };

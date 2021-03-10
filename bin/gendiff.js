@@ -8,8 +8,8 @@ const program = new Command();
 
 const getJsonFromFile = (filePath) => {
   const absolutePath = filePath.startsWith('/') ? filePath : path.join(process.cwd(), filePath);
-  const file = readFileSync(absolutePath);
-  const json = JSON.parse(file)
+  const file = readFileSync(absolutePath, 'utf-8');
+  const json = JSON.parse(file);
 
   return json;
 };
