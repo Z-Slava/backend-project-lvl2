@@ -6,4 +6,4 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/abe36b496f074af5e619/test_coverage)](https://codeclimate.com/github/Z-Slava/backend-project-lvl2/test_coverage)
 
 ### Gendiff demo:
-[![asciicast](https://asciinema.org/a/aN85bIunguNLhTzNuT0WDGa8W.svg)](https://asciinema.org/a/aN85bIunguNLhTzNuT0WDGa8W)
+[![asciicast](https://asciinema.org/a/BpQiOJgU777HhB4wpmn5Ue6qf.svg)](https://asciinema.org/a/BpQiOJgU777HhB4wpmn5Ue6qf)

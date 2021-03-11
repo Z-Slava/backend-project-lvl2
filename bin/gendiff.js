@@ -3,13 +3,15 @@ import { Command } from 'commander';
 import { readFileSync } from 'fs';
 import path from 'path';
 import genDiff from '../src/index.js';
+import getParsedFile from '../src/parsers/index.js';
 
 const program = new Command();
 
 const getJsonFromFile = (filePath) => {
   const absolutePath = filePath.startsWith('/') ? filePath : path.join(process.cwd(), filePath);
   const file = readFileSync(absolutePath, 'utf-8');
-  const json = JSON.parse(file);
+  const extenstion = path.extname(filePath);
+  const json = getParsedFile(file, extenstion);
 
   return json;
 };
