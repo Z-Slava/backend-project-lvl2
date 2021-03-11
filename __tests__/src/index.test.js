@@ -11,12 +11,46 @@ const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
 const readFileAsString = (filename) => readFile(filename).toString('utf-8');
 const readFileAsJson = (filename) => JSON.parse(readFile(filename));
 
-describe('Testing genDiff on flat json', () => {
-  test('Should return valid diff', () => {
-    const json1 = readFileAsJson('hexlet1.json');
-    const json2 = readFileAsJson('hexlet2.json');
-    const expected = readFileAsString('hexlet-diff.txt');
+describe('Test genDiff function', () => {
+  describe('Tests for flat stractures', () => {
+    test('Should return valid diff when passing 2 not empty jsons', () => {
+      const json1 = readFileAsJson('hexlet1.json');
+      const json2 = readFileAsJson('hexlet2.json');
+      const expected = readFileAsString('hexlet-diff.txt');
 
-    expect(genDiff(json1, json2)).toBe(expected);
+      const resultDiff = genDiff(json1, json2);
+
+      expect(resultDiff).toBe(expected);
+    });
+
+    test('Should return valid diff when passing empty first json', () => {
+      const json1 = readFileAsJson('empty.json');
+      const json2 = readFileAsJson('hexlet2.json');
+      const expected = readFileAsString('hexlet-diff-empty-source.txt');
+
+      const resultDiff = genDiff(json1, json2);
+
+      expect(resultDiff).toBe(expected);
+    });
+
+    test('Should return valid diff when passing empty second json', () => {
+      const json1 = readFileAsJson('hexlet1.json');
+      const json2 = readFileAsJson('empty.json');
+      const expected = readFileAsString('hexlet-diff-empty-dest.txt');
+
+      const resultDiff = genDiff(json1, json2);
+
+      expect(resultDiff).toBe(expected);
+    });
+
+    test('Should return valid diff when passing 2 empty jsons', () => {
+      const json1 = readFileAsJson('empty.json');
+      const json2 = readFileAsJson('empty.json');
+      const expected = readFileAsString('hexlet-diff-empty.txt');
+
+      const resultDiff = genDiff(json1, json2);
+
+      expect(resultDiff).toBe(expected);
+    });
   });
 });
