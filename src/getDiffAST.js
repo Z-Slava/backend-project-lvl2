@@ -105,7 +105,7 @@ const getDiffAST = (originalJson, modifiedJson) => {
     if (isNestedDiffNode(node)) {
       const { key, value, valueToCompare, sign } = node;
       const flattenValue = getDiffAST(valueToCompare, value);
-      return createNestedDiffNode(key, flattenValue, flattenValue, sign);
+      return createNestedDiffNode(key, flattenValue, valueToCompare, sign);
     }
 
     return node;
