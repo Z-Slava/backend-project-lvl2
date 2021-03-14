@@ -41,4 +41,8 @@
         }
         fee: 100500
     }
+  - group4: string
+  + group4: {
+        text: Hidden
+    }
 }

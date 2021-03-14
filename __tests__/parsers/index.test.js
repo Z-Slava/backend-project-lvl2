@@ -45,5 +45,19 @@ describe('Test getParsedFile funcion', () => {
     const extention = extname('hexlet-diff.txt');
 
     expect(() => getParsedFile(file, extention)).toThrow();
-  })
+  });
+
+  test('Should return json by default', () => {
+    const expected = {
+      host: 'hexlet.io',
+      timeout: 50,
+      proxy: '123.234.53.22',
+      follow: false,
+    };
+    const file = readFile('hexlet1.json');
+
+    const resultJson = getParsedFile(file);
+
+    expect(resultJson).toEqual(expected);
+  });
 });

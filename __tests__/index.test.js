@@ -55,14 +55,14 @@ describe('Test genDiff function', () => {
   });
 
   describe('Test for nested structures #nested', () => {
-    test('Should return valid diff when passing 2 not empty jsons', () => {
+    test('Should return valid diff when calling with stylish formatter', () => {
       const json1 = readFileAsJson('nested-json1.json');
       const json2 = readFileAsJson('nested-json2.json');
       const expected = readFileAsString('nested-diff.txt');
 
-      const resultDiff = genDiff(json1, json2);
+      const actual = genDiff(json1, json2, 'stylish');
 
-      expect(resultDiff).toBe(expected);
+      expect(actual).toBe(expected);
     });
 
     test('Should return valid diff when calling with plain formatter', () => {
@@ -73,6 +73,15 @@ describe('Test genDiff function', () => {
       const actual = genDiff(json1, json2, 'plain');
 
       expect(actual).toBe(expected);
+    });
+
+    test('Should throw error for not supported formatters', () => {
+      const json1 = readFileAsJson('nested-json1.json');
+      const json2 = readFileAsJson('nested-json2.json');
+
+      const actual = () => genDiff(json1, json2, 'blabla');
+
+      expect(actual).toThrow();
     });
   });
 });
