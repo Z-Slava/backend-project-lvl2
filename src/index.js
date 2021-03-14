@@ -1,66 +1,125 @@
 import _ from 'lodash';
-
-const markAsDeleted = (pair) => [...pair, '-'];
-
-const markAsAdded = (pair) => [...pair, '+'];
-
-const markAsUnchanged = (pair) => [...pair, ' '];
-
-const markAsDiff = ([originPair, modifiedPair]) => [
-  markAsDeleted(originPair),
-  markAsAdded(modifiedPair),
-];
+import stylish from './formatters/index.js'
 
 const compareBySameKeys = ([key1], [key2]) => key1 === key2;
 
-const getDeletedPairs = (originPairs, modifiedPairs) => {
-  const uniquePairsUnion = _.unionWith(originPairs, modifiedPairs, compareBySameKeys);
+const createFlatDiffNode = ([key, value], sign) => ({ type: 'flat', key, value, sign });
+const createNestedDiffNode = ([key, value], modifiedValue, sign) => ({
+  type: 'nested',
+  key,
+  value,
+  modifiedValue,
+  sign,
+});
 
-  return _.differenceWith(uniquePairsUnion, modifiedPairs, compareBySameKeys);
+export const isNestedDiffNode = ({ type }) => type === 'nested';
+
+const transformPairToDiffNode = (sign) => ([key, value]) => {
+  if (_.isObject(value)) {
+    return createNestedDiffNode([key, _.cloneDeep(value)], _.cloneDeep(value), sign);
+  }
+  return createFlatDiffNode([key, value], sign);
 };
 
-const getAddedPairs = (originPairs, modifiedPairs) => {
-  const uniquePairsUnion = _.unionWith(originPairs, modifiedPairs, compareBySameKeys);
+const transformPairsToDiffNodes = ([originalPair, modifiedPair]) => {
+  const [originalKey, originalValue] = originalPair;
+  const [, modifiedValue] = modifiedPair;
 
-  return _.differenceWith(uniquePairsUnion, originPairs, compareBySameKeys);
+  const originalValueCopy = _.cloneDeep(originalValue);
+  const modifiedValueCopy = _.cloneDeep(modifiedValue);
+
+  if (_.isObject(originalValue) && _.isObject(modifiedValue)) {
+    return [createNestedDiffNode([originalKey, originalValueCopy], modifiedValueCopy, ' ')];
+  }
+
+  if (_.isObject(originalValue)) {
+    return [
+      createNestedDiffNode([originalKey, originalValueCopy], originalValueCopy, '-'),
+      createFlatDiffNode([originalKey, modifiedValue], '+'),
+    ];
+  }
+
+  if (_.isObject(modifiedValue)) {
+    return [
+      createFlatDiffNode([originalKey, originalValue], '-'),
+      createNestedDiffNode([originalKey, modifiedValueCopy], modifiedValueCopy, '+'),
+    ];
+  }
+
+  return [
+    createFlatDiffNode([originalKey, originalValue], '-'),
+    createFlatDiffNode([originalKey, modifiedValue], '+'),
+  ];
 };
 
-const getDiffPairs = (originPairs, modifiedPairs) => {
-  const i1 = _.intersectionWith(originPairs, modifiedPairs, compareBySameKeys);
-  const i2 = _.intersectionWith(modifiedPairs, originPairs, compareBySameKeys);
+const getPairsFactory = (originalPair, modifiedPair) => {
+  const getDeletedPairs = (original, modified) => () => {
+    const uniqueUnion = _.unionWith(original, modified, compareBySameKeys);
+    const deleted = _.differenceWith(uniqueUnion, modified, compareBySameKeys);
 
-  const diff = _.sortBy(_.xorWith(i1, i2, _.isEqual), 0);
+    return deleted;
+  };
 
-  return _.chunk(diff, 2);
+  const getAddedPairs = (original, modified) => () => {
+    const uniqueUnion = _.unionWith(original, modified, compareBySameKeys);
+    const added = _.differenceWith(uniqueUnion, original, compareBySameKeys);
+
+    return added;
+  };
+
+  const getUnchangedPairs = (original, modified) => () => {
+    const leftIntersection = _.intersectionWith(original, modified, compareBySameKeys);
+    const rightIntersection = _.intersectionWith(modified, original, compareBySameKeys);
+    const unchanged = _.intersectionWith(leftIntersection, rightIntersection, _.isEqual);
+
+    return unchanged;
+  };
+
+  const getDiffPairs = (original, modified) => () => {
+    const i1 = _.intersectionWith(original, modified, compareBySameKeys);
+    const i2 = _.intersectionWith(modified, original, compareBySameKeys);
+    const diff = _.sortBy(_.xorWith(i1, i2, _.isEqual), 0);
+    const chunkedDiff = _.chunk(diff, 2);
+
+    return chunkedDiff;
+  };
+
+  return {
+    getDeletedPairs: getDeletedPairs(originalPair, modifiedPair),
+    getAddedPairs: getAddedPairs(originalPair, modifiedPair),
+    getUnchangedPairs: getUnchangedPairs(originalPair, modifiedPair),
+    getDiffPairs: getDiffPairs(originalPair, modifiedPair),
+  };
 };
 
-const getUnchangedPairs = (originPairs, modifiedPairs) => {
-  const i1 = _.intersectionWith(originPairs, modifiedPairs, compareBySameKeys);
-  const i2 = _.intersectionWith(modifiedPairs, originPairs, compareBySameKeys);
+const getAST = (originalJson, modifiedJson) => {
+  const pairsFactory = getPairsFactory(Object.entries(originalJson), Object.entries(modifiedJson));
 
-  const unchanged = _.intersectionWith(i1, i2, _.isEqual);
+  const unchangedNodes = pairsFactory.getUnchangedPairs().map(transformPairToDiffNode(' '));
+  const deletedNodes = pairsFactory.getDeletedPairs().map(transformPairToDiffNode('-'));
+  const addedNodes = pairsFactory.getAddedPairs().map(transformPairToDiffNode('+'));
+  const diffNodes = pairsFactory.getDiffPairs().flatMap(transformPairsToDiffNodes);
 
-  return unchanged;
+  const result = [...unchangedNodes, ...deletedNodes, ...addedNodes, ...diffNodes];
+
+  const flatResult = result.map((node) => {
+    if (isNestedDiffNode(node)) {
+      const { key, value, modifiedValue, sign } = node;
+      const flatValue = getAST(value, modifiedValue);
+      return createNestedDiffNode([key, flatValue], flatValue, sign)
+    }
+    return node;
+  });
+
+
+  return _.sortBy(flatResult, 'key');
 };
 
-const genDiff = (json1, json2) => {
-  const pairs1 = Object.entries(json1);
-  const pairs2 = Object.entries(json2);
+const genDiff = (originalJson, modifiedJson, formatter = stylish) => {
+  const ast = getAST(originalJson, modifiedJson);
+  const stiledDiff = formatter(ast);
 
-  const addedPart = getAddedPairs(pairs1, pairs2).map(markAsAdded);
-  const deletedPart = getDeletedPairs(pairs1, pairs2).map(markAsDeleted);
-  const diffPart = getDiffPairs(pairs1, pairs2).flatMap(markAsDiff);
-  const unchangedPart = getUnchangedPairs(pairs1, pairs2).map(markAsUnchanged);
-
-  const generalDiff = [...addedPart, ...deletedPart, ...diffPart, ...unchangedPart];
-  const sortedDiff = _.sortBy(generalDiff, '0');
-  const signedDiff = sortedDiff.map(([key, value, sign]) => [`${sign} ${key}`, value]);
-
-  const resultStirng = JSON.stringify(_.fromPairs(signedDiff), null, 2)
-    .replace(/"*([^"]+)"/g, '$1')
-    .replace(/([^,]+),/g, '$1');
-
-  return resultStirng;
+  return stiledDiff;
 };
 
 export default genDiff;

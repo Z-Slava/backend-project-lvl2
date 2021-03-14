@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { readFileSync } from 'fs';
-import genDiff from '../../src/index.js';
+import genDiff  from '../../src/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,7 +12,7 @@ const readFileAsString = (filename) => readFile(filename).toString('utf-8');
 const readFileAsJson = (filename) => JSON.parse(readFile(filename));
 
 describe('Test genDiff function', () => {
-  describe('Tests for flat stractures', () => {
+  describe('Tests for flat stractures #flat', () => {
     test('Should return valid diff when passing 2 not empty jsons', () => {
       const json1 = readFileAsJson('hexlet1.json');
       const json2 = readFileAsJson('hexlet2.json');
@@ -47,6 +47,18 @@ describe('Test genDiff function', () => {
       const json1 = readFileAsJson('empty.json');
       const json2 = readFileAsJson('empty.json');
       const expected = readFileAsString('hexlet-diff-empty.txt');
+
+      const resultDiff = genDiff(json1, json2);
+
+      expect(resultDiff).toBe(expected);
+    });
+  });
+
+  describe('Test for nested structures #nested', () => {
+    test('Should return valid diff when passing 2 not empty jsons', () => {
+      const json1 = readFileAsJson('nested-json1.json');
+      const json2 = readFileAsJson('nested-json2.json');
+      const expected = readFileAsString('nested-diff.txt');
 
       const resultDiff = genDiff(json1, json2);
 

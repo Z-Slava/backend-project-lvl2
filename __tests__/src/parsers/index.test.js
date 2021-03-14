@@ -18,9 +18,9 @@ describe('Test getParsedFile funcion', () => {
       follow: false,
     };
     const file = readFile('hexlet1.json');
-    const extention = extname('hexlet1.json');
+    const ext = extname('hexlet1.json');
 
-    const resultJson = getParsedFile(file, extention);
+    const resultJson = getParsedFile(file, { ext });
 
     expect(resultJson).toEqual(expected);
   });
@@ -33,9 +33,9 @@ describe('Test getParsedFile funcion', () => {
       follow: false,
     };
     const file = readFile('hexlet1.yaml');
-    const extention = extname('hexlet1.yaml');
+    const ext = extname('hexlet1.yaml');
 
-    const resultJson = getParsedFile(file, extention);
+    const resultJson = getParsedFile(file, { ext });
 
     expect(resultJson).toEqual(expected);
   });
