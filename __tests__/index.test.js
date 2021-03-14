@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { readFileSync } from 'fs';
-import genDiff  from '../src/index.js';
+import genDiff from '../src/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -63,6 +63,16 @@ describe('Test genDiff function', () => {
       const resultDiff = genDiff(json1, json2);
 
       expect(resultDiff).toBe(expected);
+    });
+
+    test('Should return valid diff when calling with plain formatter', () => {
+      const json1 = readFileAsJson('nested-json1.json');
+      const json2 = readFileAsJson('nested-json2.json');
+      const expected = readFileAsString('plain.txt');
+
+      const actual = genDiff(json1, json2, 'plain');
+
+      expect(actual).toBe(expected);
     });
   });
 });

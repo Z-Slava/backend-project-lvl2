@@ -1,27 +1,13 @@
-import _ from 'lodash';
+import stylish from './stylish.js';
+import plain from './plain.js';
 
-const stylish = (diff) => {
-  const iter = (currentDiff, keyPadding = 2, bracketPadding = 0) => {
-    if (currentDiff.length < 1) {
-      return '{}';
-    }
+export default (formatName) => {
+  if (formatName === 'stylish') {
+    return stylish;
+  }
+  if (formatName === 'plain') {
+    return plain;
+  }
 
-    const result = currentDiff.reduce((acc, { key, value, sign }) => {
-      const signedKey = `${sign} ${key}`;
-
-      if (_.isObject(value)) {
-        const nestedObject = iter(value, keyPadding + 4, bracketPadding + 4);
-        return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${nestedObject}\n`;
-      }
-
-      return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${value}\n`;
-    }, '');
-
-    const wrapper = `{\n${result}${' '.repeat(bracketPadding)}}`;
-    return wrapper;
-  };
-
-  return iter(diff);
+  throw Error(`Formatter ${formatName} is not supported`);
 };
-
-export default stylish;

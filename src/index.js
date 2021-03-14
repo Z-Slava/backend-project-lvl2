@@ -1,11 +1,13 @@
-import stylish from './formatters/index.js'
-import genDiffAST from './getDiffAST.js'
+import getFormatter from './formatters/index.js';
+import genDiffAST from './getDiffAST.js';
 
-const genDiff = (originalJson, modifiedJson, formatter = stylish) => {
+const genDiff = (originalJson, modifiedJson, formatterName = 'stylish') => {
   const ast = genDiffAST(originalJson, modifiedJson);
-  const stiledDiff = formatter(ast);
+  const formatter = getFormatter(formatterName);
 
-  return stiledDiff;
+  const formattedDiff = formatter(ast);
+
+  return formattedDiff;
 };
 
 export default genDiff;

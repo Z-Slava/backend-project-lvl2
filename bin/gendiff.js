@@ -4,7 +4,6 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import genDiff from '../src/index.js';
 import getParsedFile from '../src/parsers/index.js';
-import stylish from '../src/formatters/index.js';
 
 const program = new Command();
 
@@ -22,14 +21,6 @@ const getJsonFromFile = (filePath) => {
   return json;
 };
 
-const getFormatter = (name) => {
-  const formatters = {
-    stylish,
-  };
-
-  return formatters[name];
-};
-
 program
   .version('0.0.1')
   .arguments('<filepath1> <filepath2>')
@@ -39,9 +30,7 @@ program
     const json1 = getJsonFromFile(filePath1);
     const json2 = getJsonFromFile(filePath2);
 
-    const formatter = getFormatter(options.format);
-
-    const result = genDiff(json1, json2, formatter);
+    const result = genDiff(json1, json2, options.format);
 
     console.log(result);
   })
