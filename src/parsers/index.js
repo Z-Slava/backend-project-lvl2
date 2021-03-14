@@ -17,7 +17,7 @@ const getParserdFile = (file, options = { ext: '.json' }) => {
   const { parser } = getParser(options.ext);
 
   if (!parser) {
-    throw Error(`${options.ext} is not supported`);
+    throw Error(`Files with ${options.ext} extention are not supported`);
   }
 
   return parser(file);
