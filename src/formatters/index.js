@@ -1,24 +1,27 @@
-import _ from 'lodash'
+import _ from 'lodash';
 
-const stylish = (diff, keyPadding = 2, bracketPadding = 0) => {
-  if (diff.length < 1) {
-    return '{}';
-  }
-
-  const result = diff.reduce((acc, { key, value, sign }) => {
-    const signedKey = `${sign} ${key}`;
-
-    if (_.isObject(value)) {
-      const nestedObject = stylish(value, keyPadding + 4, bracketPadding + 4);
-      return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${nestedObject}\n`;
+const stylish = (diff) => {
+  const iter = (currentDiff, keyPadding = 2, bracketPadding = 0) => {
+    if (currentDiff.length < 1) {
+      return '{}';
     }
 
-    return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${value}\n`;
-  }, '');
+    const result = currentDiff.reduce((acc, { key, value, sign }) => {
+      const signedKey = `${sign} ${key}`;
 
-  const wrapper = `{\n${result}${' '.repeat(bracketPadding)}}`;
+      if (_.isObject(value)) {
+        const nestedObject = iter(value, keyPadding + 4, bracketPadding + 4);
+        return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${nestedObject}\n`;
+      }
 
-  return wrapper;
+      return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${value}\n`;
+    }, '');
+
+    const wrapper = `{\n${result}${' '.repeat(bracketPadding)}}`;
+    return wrapper;
+  };
+
+  return iter(diff);
 };
 
 export default stylish;
