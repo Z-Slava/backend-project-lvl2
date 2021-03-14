@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import { dirname, join, extname } from 'path';
 import { readFileSync } from 'fs';
-import getParsedFile from '../../../src/parsers/index.js';
+import getParsedFile from '../../src/parsers/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
