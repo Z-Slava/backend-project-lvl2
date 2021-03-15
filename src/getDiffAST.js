@@ -31,17 +31,13 @@ const getNodesFromJson = (json, sign) => (key) => {
   return createNestedDiffNode(key, json[key], sign, { valueToCompare: json[key] });
 };
 
-const getDeletedNodes = (originalJson, modifiedJson) => {
-  const [originalKeys, modifiedKeys] = extractKeys(originalJson, modifiedJson);
+const getDeletedNodes = (originalJson, modifiedJson) =>
+  getDeletedKeys(...extractKeys(originalJson, modifiedJson)).map(
+    getNodesFromJson(originalJson, '-')
+  );
 
-  return getDeletedKeys(originalKeys, modifiedKeys).map(getNodesFromJson(originalJson, '-'));
-};
-
-const getAddedNodes = (originalJson, modifiedJson) => {
-  const [originalKeys, modifiedKeys] = extractKeys(originalJson, modifiedJson);
-
-  return getAddedKeys(originalKeys, modifiedKeys).map(getNodesFromJson(modifiedJson, '+'));
-};
+const getAddedNodes = (originalJson, modifiedJson) =>
+  getAddedKeys(...extractKeys(originalJson, modifiedJson)).map(getNodesFromJson(modifiedJson, '+'));
 
 const getUntouchedNodes = (originalJson, modifiedJson) => {
   const [originalKeys, modifiedKeys] = extractKeys(originalJson, modifiedJson);
