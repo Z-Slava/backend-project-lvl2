@@ -7,12 +7,12 @@ const createFlatDiffNode = (key, value, sign) => ({
   sign,
 });
 
-const createNestedDiffNode = (key, value, valueToCompare, sign) => ({
+const createNestedDiffNode = (key, value, sign, optionalProps) => ({
   type: 'nested',
   key,
   value: _.cloneDeep(value),
-  valueToCompare: _.cloneDeep(valueToCompare),
   sign,
+  ...optionalProps,
 });
 
 const isNestedDiffNode = ({ type }) => type === 'nested';
@@ -23,28 +23,24 @@ const getCommonKeys = (originalKeys, modifiedKeys) => _.intersection(originalKey
 
 const extractKeys = (json1, json2) => [Object.keys(json1), Object.keys(json2)];
 
+const getNodesFromJson = (json, sign) => (key) => {
+  if (!_.isObject(json[key])) {
+    return createFlatDiffNode(key, json[key], sign);
+  }
+
+  return createNestedDiffNode(key, json[key], sign, { valueToCompare: json[key] });
+};
+
 const getDeletedNodes = (originalJson, modifiedJson) => {
   const [originalKeys, modifiedKeys] = extractKeys(originalJson, modifiedJson);
 
-  return getDeletedKeys(originalKeys, modifiedKeys).map((key) => {
-    if (!_.isObject(originalJson[key])) {
-      return createFlatDiffNode(key, originalJson[key], '-');
-    }
-
-    return createNestedDiffNode(key, originalJson[key], originalJson[key], '-');
-  });
+  return getDeletedKeys(originalKeys, modifiedKeys).map(getNodesFromJson(originalJson, '-'));
 };
 
 const getAddedNodes = (originalJson, modifiedJson) => {
   const [originalKeys, modifiedKeys] = extractKeys(originalJson, modifiedJson);
 
-  return getAddedKeys(originalKeys, modifiedKeys).map((key) => {
-    if (!_.isObject(modifiedJson[key])) {
-      return createFlatDiffNode(key, modifiedJson[key], '+');
-    }
-
-    return createNestedDiffNode(key, modifiedJson[key], modifiedJson[key], '+');
-  });
+  return getAddedKeys(originalKeys, modifiedKeys).map(getNodesFromJson(modifiedJson, '+'));
 };
 
 const getUntouchedNodes = (originalJson, modifiedJson) => {
@@ -57,7 +53,7 @@ const getUntouchedNodes = (originalJson, modifiedJson) => {
       return createFlatDiffNode(key, originalJson[key], ' ');
     }
 
-    return createNestedDiffNode(key, originalJson[key], originalJson[key], ' ');
+    return createNestedDiffNode(key, originalJson[key], ' ', { valueToCompare: originalJson[key] });
   });
 };
 
@@ -68,18 +64,20 @@ const getDiffNodes = (originalJson, modifiedJson) => {
 
   return diffKeys.flatMap((key) => {
     if (_.isObject(originalJson[key]) && _.isObject(modifiedJson[key])) {
-      return [createNestedDiffNode(key, modifiedJson[key], originalJson[key], ' ')];
+      return [
+        createNestedDiffNode(key, modifiedJson[key], ' ', { valueToCompare: originalJson[key] }),
+      ];
     }
     if (_.isObject(originalJson[key])) {
       return [
-        createNestedDiffNode(key, originalJson[key], originalJson[key], '-'),
+        createNestedDiffNode(key, originalJson[key], '-', { valueToCompare: originalJson[key] }),
         createFlatDiffNode(key, modifiedJson[key], '+'),
       ];
     }
     if (_.isObject(modifiedJson[key])) {
       return [
         createFlatDiffNode(key, originalJson[key], '-'),
-        createNestedDiffNode(key, modifiedJson[key], modifiedJson[key], '+'),
+        createNestedDiffNode(key, modifiedJson[key], '+', { valueToCompare: modifiedJson[key] }),
       ];
     }
 
@@ -96,7 +94,6 @@ const getDiffAST = (originalJson, modifiedJson) => {
   const untouchedNodes = getUntouchedNodes(originalJson, modifiedJson);
   const diffNodes = getDiffNodes(originalJson, modifiedJson);
 
-
   const result = [...deletedNodes, ...addedNodes, ...untouchedNodes, ...diffNodes];
 
   const sortedResult = _.sortBy(result, 'key');
@@ -105,7 +102,7 @@ const getDiffAST = (originalJson, modifiedJson) => {
     if (isNestedDiffNode(node)) {
       const { key, value, valueToCompare, sign } = node;
       const flattenValue = getDiffAST(valueToCompare, value);
-      return createNestedDiffNode(key, flattenValue, valueToCompare, sign);
+      return createNestedDiffNode(key, flattenValue, sign);
     }
 
     return node;
