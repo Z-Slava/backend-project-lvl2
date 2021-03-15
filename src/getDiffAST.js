@@ -31,29 +31,48 @@ const getNodesFromJson = (json, sign) => (key) => {
   return createNestedDiffNode(key, json[key], sign, { valueToCompare: json[key] });
 };
 
-const getNodesFromJsons = (originalJson, modifiedJson) => (key) => {
-  if (_.isObject(originalJson[key]) && _.isObject(modifiedJson[key])) {
-    return [
+const actions = [
+  {
+    predicate: (originalValue, modifiedValue) =>
+      _.isObject(originalValue) && _.isObject(modifiedValue),
+    action: (originalJson, modifiedJson, key) => [
       createNestedDiffNode(key, modifiedJson[key], ' ', { valueToCompare: originalJson[key] }),
-    ];
-  }
-  if (_.isObject(originalJson[key])) {
-    return [
+    ],
+  },
+  {
+    predicate: (originalValue, modifiedValue) =>
+      _.isObject(originalValue) && !_.isObject(modifiedValue),
+    action: (originalJson, modifiedJson, key) => [
       createNestedDiffNode(key, originalJson[key], '-', { valueToCompare: originalJson[key] }),
       createFlatDiffNode(key, modifiedJson[key], '+'),
-    ];
-  }
-  if (_.isObject(modifiedJson[key])) {
-    return [
+    ],
+  },
+  {
+    predicate: (originalValue, modifiedValue) =>
+      !_.isObject(originalValue) && _.isObject(modifiedValue),
+    action: (originalJson, modifiedJson, key) => [
       createFlatDiffNode(key, originalJson[key], '-'),
       createNestedDiffNode(key, modifiedJson[key], '+', { valueToCompare: modifiedJson[key] }),
-    ];
-  }
+    ],
+  },
+  {
+    predicate: (originalValue, modifiedValue) =>
+      !_.isObject(originalValue) && !_.isObject(modifiedValue),
+    action: (originalJson, modifiedJson, key) => [
+      createFlatDiffNode(key, originalJson[key], '-'),
+      createFlatDiffNode(key, modifiedJson[key], '+'),
+    ],
+  },
+];
 
-  return [
-    createFlatDiffNode(key, originalJson[key], '-'),
-    createFlatDiffNode(key, modifiedJson[key], '+'),
-  ];
+const getAction = (originalValue, modifiedValue) => {
+  const { action } = actions.find(({ predicate }) => predicate(originalValue, modifiedValue));
+  return action;
+};
+
+const getNodesFromJsons = (originalJson, modifiedJson) => (key) => {
+  const action = getAction(originalJson[key], modifiedJson[key]);
+  return action(originalJson, modifiedJson, key);
 };
 
 const getDeletedNodes = (originalJson, modifiedJson) =>
