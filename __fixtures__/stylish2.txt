@@ -1,0 +1,10 @@
+{
+  + first_key: {
+        inner_key: inner world
+    }
+  - second_key: goodby world
+    third_key: {
+      - inner_key1: goodby world
+      + inner_key2: hello world
+    }
+}

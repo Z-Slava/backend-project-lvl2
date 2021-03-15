@@ -75,6 +75,16 @@ describe('Test genDiff function', () => {
       expect(actual).toBe(expected);
     });
 
+    test('Should return valid json when calling with json formatter', () => {
+      const json1 = readFileAsJson('nested-json1.json');
+      const json2 = readFileAsJson('nested-json2.json');
+      const expected = readFileAsJson('json-formatter-result.json');
+
+      const actual = genDiff(json1, json2, 'json');
+
+      expect(actual).toEqual(expected);
+    });
+
     test('Should throw error for not supported formatters', () => {
       const json1 = readFileAsJson('nested-json1.json');
       const json2 = readFileAsJson('nested-json2.json');

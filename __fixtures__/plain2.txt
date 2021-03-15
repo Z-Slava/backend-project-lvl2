@@ -1,0 +1,4 @@
+Property 'first_key' was added with value: [complex value]
+Property 'second_key' was removed
+Property 'third_key.inner_key1' was removed
+Property 'third_key.inner_key2' was added with value: 'hello world'

@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 const getFixturePath = (filename) => join(__dirname, '../..', '__fixtures__', filename);
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
 
-describe('Test getParsedFile funcion', () => {
+describe('Test getParsedFile function', () => {
   test('Should return json from not empty json file', () => {
     const expected = {
       host: 'hexlet.io',

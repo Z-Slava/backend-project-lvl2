@@ -1,0 +1,2 @@
+Property 'first_key' was added with value: 'hello world'
+Property 'second_key' was removed
