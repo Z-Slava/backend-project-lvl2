@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const getCorrectDisplay = (value) => {
+const normalizeValue = (value) => {
   if (_.isString(value)) {
     return `'${value}'`;
   }
@@ -12,50 +12,49 @@ const getCorrectDisplay = (value) => {
 
 const actions = {
   '-': (prop) => `Property '${prop}' was removed`,
-  '+': (prop, value) => `Property '${prop}' was added with value: ${getCorrectDisplay(value)}`,
+  '+': (prop, value) => `Property '${prop}' was added with value: ${normalizeValue(value)}`,
   '-+': (prop, value, prevValue) =>
-    `Property '${prop}' was updated. From ${getCorrectDisplay(prevValue)} to ${getCorrectDisplay(
-      value
-    )}`,
+    `Property '${prop}' was updated. From ${normalizeValue(prevValue)} to ${normalizeValue(value)}`,
+};
+
+const getFlatDiff = (nodes, currentProp = '') =>
+  nodes.reduce((acc, { type, key, value, sign }) => {
+    if (type === 'nested' && sign === ' ') {
+      return [...acc, ...getFlatDiff(value, `${currentProp}${key}.`)];
+    }
+
+    return [...acc, { prop: `${currentProp}${key}`, value, sign }];
+  }, []);
+
+const removeUnchengedProps = (flatDiff) => flatDiff.filter(({ sign }) => sign !== ' ');
+
+const mergeUpdatedProps = (flatDiff) => {
+  const [initValue, rest] = [_.head(flatDiff), _.tail(flatDiff)];
+
+  return rest.reduce(
+    (acc, node) => {
+      const lastModification = _.last(acc);
+      const { prop, value } = node;
+
+      if (prop === lastModification.prop) {
+        return [
+          ..._.initial(acc),
+          { prop, value, valueToCompare: lastModification.value, sign: '-+' },
+        ];
+      }
+
+      return [...acc, node];
+    },
+    [initValue]
+  );
 };
 
 const plain = (diff) => {
-  const getFlatDiff = (nodes, currentProp) => {
-    const flat = nodes.reduce((acc, node) => {
-      if (node.type === 'nested') {
-        if (node.sign === '-' || node.sign === '+') {
-          return [
-            ...acc,
-            { prop: `${currentProp}${node.key}`, value: node.value, sign: node.sign },
-          ];
-        }
-        return [...acc, ...getFlatDiff(node.value, `${currentProp}${node.key}.`)];
-      }
+  const flatDiff = getFlatDiff(diff);
+  const onlyModifiedProps = removeUnchengedProps(flatDiff);
+  const preparedData = mergeUpdatedProps(onlyModifiedProps);
 
-      return [...acc, { prop: `${currentProp}${node.key}`, value: node.value, sign: node.sign }];
-    }, []);
-
-    return flat;
-  };
-
-  const flatDiff = getFlatDiff(diff, '');
-  const onlyModifiedProps = flatDiff
-    .filter(({ sign }) => sign !== ' ')
-    .reduce((acc, node) => {
-      if (acc.length === 0) {
-        return [node];
-      }
-      const last = _.last(acc);
-      if (node.prop === last.prop) {
-        return [
-          ..._.initial(acc),
-          { prop: node.prop, value: node.value, valueToCompare: last.value, sign: '-+' },
-        ];
-      }
-      return [...acc, node];
-    }, []);
-
-  return onlyModifiedProps
+  return preparedData
     .map(({ prop, value, valueToCompare, sign }) => actions[sign](prop, value, valueToCompare))
     .join('\n');
 };
