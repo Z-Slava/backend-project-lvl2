@@ -21,7 +21,7 @@ export const isUntouchedDiffNode = ({ sign }) => sign === ' ';
 
 export const isExtendableDiffNode = (node) => isNestedDiffNode(node) && isUntouchedDiffNode(node);
 
-export const getDiffNodeValue = (node) => isNestedDiffNode(node) ? node.children : node.value;
+export const getDiffNodeValue = (node) => (isNestedDiffNode(node) ? node.children : node.value);
 
 const getDeletedKeys = (originalKeys, modifiedKeys) => _.difference(originalKeys, modifiedKeys);
 const getAddedKeys = (originalKeys, modifiedKeys) => _.difference(modifiedKeys, originalKeys);
@@ -39,31 +39,27 @@ const getNodesFromJson = (json, sign) => (key) => {
 
 const actions = [
   {
-    predicate: (originalValue, modifiedValue) =>
-      _.isObject(originalValue) && _.isObject(modifiedValue),
+    predicate: (originalValue, modifiedValue) => _.isObject(originalValue) && _.isObject(modifiedValue),
     action: (originalJson, modifiedJson, key) => [
       createNestedDiffNode(key, modifiedJson[key], ' ', { valueToCompare: originalJson[key] }),
     ],
   },
   {
-    predicate: (originalValue, modifiedValue) =>
-      _.isObject(originalValue) && !_.isObject(modifiedValue),
+    predicate: (originalValue, modifiedValue) => _.isObject(originalValue) && !_.isObject(modifiedValue),
     action: (originalJson, modifiedJson, key) => [
       createNestedDiffNode(key, originalJson[key], '-', { valueToCompare: originalJson[key] }),
       createFlatDiffNode(key, modifiedJson[key], '+'),
     ],
   },
   {
-    predicate: (originalValue, modifiedValue) =>
-      !_.isObject(originalValue) && _.isObject(modifiedValue),
+    predicate: (originalValue, modifiedValue) => !_.isObject(originalValue) && _.isObject(modifiedValue),
     action: (originalJson, modifiedJson, key) => [
       createFlatDiffNode(key, originalJson[key], '-'),
       createNestedDiffNode(key, modifiedJson[key], '+', { valueToCompare: modifiedJson[key] }),
     ],
   },
   {
-    predicate: (originalValue, modifiedValue) =>
-      !_.isObject(originalValue) && !_.isObject(modifiedValue),
+    predicate: (originalValue, modifiedValue) => !_.isObject(originalValue) && !_.isObject(modifiedValue),
     action: (originalJson, modifiedJson, key) => [
       createFlatDiffNode(key, originalJson[key], '-'),
       createFlatDiffNode(key, modifiedJson[key], '+'),
@@ -82,9 +78,7 @@ const getNodesFromJsons = (originalJson, modifiedJson) => (key) => {
 };
 
 const getDeletedNodes = (originalJson, modifiedJson) =>
-  getDeletedKeys(...extractKeys(originalJson, modifiedJson)).map(
-    getNodesFromJson(originalJson, '-')
-  );
+  getDeletedKeys(...extractKeys(originalJson, modifiedJson)).map(getNodesFromJson(originalJson, '-'));
 
 const getAddedNodes = (originalJson, modifiedJson) =>
   getAddedKeys(...extractKeys(originalJson, modifiedJson)).map(getNodesFromJson(modifiedJson, '+'));

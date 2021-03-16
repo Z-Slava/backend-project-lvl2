@@ -14,12 +14,16 @@ const normalizeValue = (value) => {
 const actions = {
   '-': (prop) => `Property '${prop}' was removed`,
   '+': (prop, value) => `Property '${prop}' was added with value: ${normalizeValue(value)}`,
-  '-+': (prop, value, prevValue) =>
-    `Property '${prop}' was updated. From ${normalizeValue(prevValue)} to ${normalizeValue(value)}`,
+  '-+': (prop, value, prevValue) => {
+    const normilizedPropMessage = `Property '${prop}' was updated.`;
+    const normilizedDiffMessage = `From ${normalizeValue(prevValue)} to ${normalizeValue(value)}`;
+    const resultMessage = `${normilizedPropMessage} ${normilizedDiffMessage}`;
+    return resultMessage;
+  },
 };
 
-const getFlatDiff = (nodes, currentProp = '') =>
-  nodes.reduce((acc, node) => {
+const getFlatDiff = (nodes, currentProp = '') => {
+  const result = nodes.reduce((acc, node) => {
     const { key, sign } = node;
     if (isExtendableDiffNode(node)) {
       return [...acc, ...getFlatDiff(node.children, `${currentProp}${key}.`)];
@@ -27,6 +31,9 @@ const getFlatDiff = (nodes, currentProp = '') =>
 
     return [...acc, { prop: `${currentProp}${key}`, value: getDiffNodeValue(node), sign }];
   }, []);
+
+  return result;
+};
 
 const removeUnchengedProps = (flatDiff) => flatDiff.filter((node) => !isUntouchedDiffNode(node));
 
@@ -41,13 +48,18 @@ const mergeUpdatedProps = (flatDiff) => {
       if (prop === lastModification.prop) {
         return [
           ..._.initial(acc),
-          { prop, value, valueToCompare: lastModification.value, sign: '-+' },
+          {
+            prop,
+            value,
+            valueToCompare: lastModification.value,
+            sign: '-+',
+          },
         ];
       }
 
       return [...acc, node];
     },
-    [initValue]
+    [initValue],
   );
 };
 

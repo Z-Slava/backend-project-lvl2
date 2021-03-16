@@ -92,11 +92,11 @@ describe('Test json formatter', () => {
 
   test('Should be immutable', () => {
     const ast = _.cloneDeep(nestedAst);
-    const expected = _.cloneDeep(ast);
+    const expected = _.cloneDeep(nestedAst);
 
-    const data = json(expected);
+    const data = json(ast);
     const actual = JSON.parse(data);
-    ast[0].value = 'sad world';
+    _.set(ast, '[0].value', 'sad world');
 
     expect(actual).toEqual(expected);
     expect(actual[0].value).not.toBe(ast[0].value);
