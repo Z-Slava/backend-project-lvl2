@@ -9,7 +9,6 @@ const __dirname = dirname(__filename);
 const getFixturePath = (filename) => join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filename) => readFileSync(getFixturePath(filename), 'utf-8');
 const readFileAsString = (filename) => readFile(filename).toString('utf-8');
-const readFileAsJson = (filename) => JSON.parse(readFile(filename));
 
 describe('Test genDiff function', () => {
   describe('Test for nested structures', () => {
@@ -36,11 +35,10 @@ describe('Test genDiff function', () => {
     test('Should return valid json when calling with json formatter', () => {
       const filepath1 = getFixturePath('nested1.yaml');
       const filepath2 = getFixturePath('nested2.yaml');
-      const expected = readFileAsJson('json-formatter-result.json');
 
-      const actual = genDiff(filepath1, filepath2, 'json');
+      const data = genDiff(filepath1, filepath2, 'json');
 
-      expect(actual).toEqual(expected);
+      expect(() => JSON.parse(data)).not.toThrow();
     });
 
     test('Should return valid json when calling with empty jsons files', () => {

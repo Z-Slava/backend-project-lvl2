@@ -64,10 +64,19 @@ const nestedAst = [
 ];
 
 describe('Test json formatter', () => {
+  test('Shuld return valid json string', () => {
+    const ast = _.cloneDeep(nestedAst);
+
+    const data = json(ast);
+
+    expect(() => JSON.parse(data)).not.toThrow();
+  });
+
   test('Should return json when called with valid ast 1', () => {
     const expected = _.cloneDeep(flatAst);
 
-    const actual = json(expected);
+    const data = json(expected);
+    const actual = JSON.parse(data);
 
     expect(actual).toEqual(expected);
   });
@@ -75,15 +84,18 @@ describe('Test json formatter', () => {
   test('Should return json when called with valid ast 2', () => {
     const expected = _.cloneDeep(nestedAst);
 
-    const actual = json(expected);
+    const data = json(expected);
+    const actual = JSON.parse(data);
 
     expect(actual).toEqual(expected);
   });
+
   test('Should be immutable', () => {
     const ast = _.cloneDeep(nestedAst);
     const expected = _.cloneDeep(ast);
 
-    const actual = json(ast);
+    const data = json(expected);
+    const actual = JSON.parse(data);
     ast[0].value = 'sad world';
 
     expect(actual).toEqual(expected);

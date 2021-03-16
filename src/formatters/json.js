@@ -3,7 +3,7 @@ import _ from 'lodash';
 const json = (ast) => {
   const copy = _.cloneDeep(ast);
 
-  return copy;
+  return JSON.stringify(copy);
 };
 
 export default json;
