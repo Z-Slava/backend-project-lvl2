@@ -4,8 +4,10 @@ import getFormatter from './formatters/index.js';
 import genDiffAST from './getDiffAST.js';
 import getParsedFile from './parsers/index.js';
 
-const getAbsolutePath = (filePath) =>
-  filePath.startsWith('/') ? filePath : path.join(process.cwd(), filePath);
+const getAbsolutePath = (filePath) => {
+  const absolutePath = filePath.startsWith('/') ? filePath : path.join(process.cwd(), filePath);
+  return absolutePath;
+};
 
 const getJsonFromFile = (filePath) => {
   const absolutePath = getAbsolutePath(filePath);

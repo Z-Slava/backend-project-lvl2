@@ -69,7 +69,12 @@ const plain = (diff) => {
   const preparedData = mergeUpdatedProps(onlyModifiedProps);
 
   return preparedData
-    .map(({ prop, value, valueToCompare, sign }) => actions[sign](prop, value, valueToCompare))
+    .map((node) => {
+      const {
+        prop, value, valueToCompare, sign,
+      } = node;
+      return actions[sign](prop, value, valueToCompare);
+    })
     .join('\n');
 };
 

@@ -1,7 +1,6 @@
 plugins:
   - import
   - jest
-  - prettier
 
 env:
   es2021: true
@@ -9,7 +8,6 @@ env:
 
 extends:
   - airbnb-base
-  - prettier
   - plugin:import/recommended
   - plugin:jest/recommended
 
@@ -18,7 +16,6 @@ parserOptions:
   sourceType: module
 
 rules:
-  prettier/prettier: "error"
   import/extensions: ["error", "never", { "js": "always" }]
   no-console: 0
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
