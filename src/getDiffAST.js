@@ -89,17 +89,15 @@ const getNodesFromJsons = (originalJson, modifiedJson) => (key) => {
   return action(originalJson, modifiedJson, key);
 };
 
-const getDeletedNodes = (originalJson, modifiedJson) => {
-  const deletedNodes = getDeletedKeys(...extractKeys(originalJson, modifiedJson)).map(
-    getNodesFromJson(originalJson, '-'),
-  );
-  return deletedNodes;
-};
-
-const getAddedNodes = (originalJson, modifiedJson) => {
-  const addedNodes = getAddedKeys(...extractKeys(originalJson, modifiedJson)).map(
-    getNodesFromJson(modifiedJson, '+'),
-  );
+const getNewNodes = (originalJson, modifiedJson, sign) => {
+  const [originalKeys, modifiedKeys] = extractKeys(originalJson, modifiedJson);
+  if (sign === '-') {
+    const deletedKeys = getDeletedKeys(originalKeys, modifiedKeys);
+    const deletedNodes = deletedKeys.map(getNodesFromJson(originalJson, sign));
+    return deletedNodes;
+  }
+  const addedKeys = getAddedKeys(originalKeys, modifiedKeys);
+  const addedNodes = addedKeys.map(getNodesFromJson(modifiedJson, sign));
   return addedNodes;
 };
 
@@ -120,8 +118,8 @@ const getDiffNodes = (originalJson, modifiedJson) => {
 };
 
 const getDiffAST = (originalJson, modifiedJson) => {
-  const deletedNodes = getDeletedNodes(originalJson, modifiedJson);
-  const addedNodes = getAddedNodes(originalJson, modifiedJson);
+  const deletedNodes = getNewNodes(originalJson, modifiedJson, '-');
+  const addedNodes = getNewNodes(originalJson, modifiedJson, '+');
   const untouchedNodes = getUntouchedNodes(originalJson, modifiedJson);
   const diffNodes = getDiffNodes(originalJson, modifiedJson);
 
