@@ -5,7 +5,6 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/abe36b496f074af5e619/maintainability)](https://codeclimate.com/github/Z-Slava/backend-project-lvl2/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/abe36b496f074af5e619/test_coverage)](https://codeclimate.com/github/Z-Slava/backend-project-lvl2/test_coverage)
 
-
 ### Gendiff demo - flat jsons comparison (step 3):
 [![asciicast](https://asciinema.org/a/GVYtmmthPxcewPncIGOz9NlfH.svg)](https://asciinema.org/a/GVYtmmthPxcewPncIGOz9NlfH)
 
