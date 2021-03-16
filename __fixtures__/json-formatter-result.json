@@ -1,98 +1,218 @@
 [
   {
-    "key": "common",
-    "sign": " ",
-    "type": "nested",
-    "value": [
-      { "key": "follow", "sign": "+", "type": "flat", "value": false },
-      { "key": "setting1", "sign": " ", "type": "flat", "value": "Value 1" },
-      { "key": "setting2", "sign": "-", "type": "flat", "value": 200 },
-      { "key": "setting3", "sign": "-", "type": "flat", "value": true },
-      { "key": "setting3", "sign": "+", "type": "flat", "value": null },
-      { "key": "setting4", "sign": "+", "type": "flat", "value": "blah blah" },
+    "children": [
       {
+        "key": "follow",
+        "sign": "+",
+        "type": "flat",
+        "value": false
+      },
+      {
+        "key": "setting1",
+        "sign": " ",
+        "type": "flat",
+        "value": "Value 1"
+      },
+      {
+        "key": "setting2",
+        "sign": "-",
+        "type": "flat",
+        "value": 200
+      },
+      {
+        "key": "setting3",
+        "sign": "-",
+        "type": "flat",
+        "value": true
+      },
+      {
+        "key": "setting3",
+        "sign": "+",
+        "type": "flat",
+        "value": null
+      },
+      {
+        "key": "setting4",
+        "sign": "+",
+        "type": "flat",
+        "value": "blah blah"
+      },
+      {
+        "children": [
+          {
+            "key": "key5",
+            "sign": " ",
+            "type": "flat",
+            "value": "value5"
+          }
+        ],
         "key": "setting5",
         "sign": "+",
-        "type": "nested",
-        "value": [{ "key": "key5", "sign": " ", "type": "flat", "value": "value5" }]
+        "type": "nested"
       },
       {
-        "key": "setting6",
-        "sign": " ",
-        "type": "nested",
-        "value": [
+        "children": [
           {
+            "children": [
+              {
+                "key": "wow",
+                "sign": "-",
+                "type": "flat",
+                "value": ""
+              },
+              {
+                "key": "wow",
+                "sign": "+",
+                "type": "flat",
+                "value": "so much"
+              }
+            ],
             "key": "doge",
             "sign": " ",
-            "type": "nested",
-            "value": [
-              { "key": "wow", "sign": "-", "type": "flat", "value": "" },
-              { "key": "wow", "sign": "+", "type": "flat", "value": "so much" }
-            ]
+            "type": "nested"
           },
-          { "key": "key", "sign": " ", "type": "flat", "value": "value" },
-          { "key": "ops", "sign": "+", "type": "flat", "value": "vops" }
-        ]
+          {
+            "key": "key",
+            "sign": " ",
+            "type": "flat",
+            "value": "value"
+          },
+          {
+            "key": "ops",
+            "sign": "+",
+            "type": "flat",
+            "value": "vops"
+          }
+        ],
+        "key": "setting6",
+        "sign": " ",
+        "type": "nested"
       }
-    ]
+    ],
+    "key": "common",
+    "sign": " ",
+    "type": "nested"
   },
   {
-    "key": "group1",
-    "sign": " ",
-    "type": "nested",
-    "value": [
-      { "key": "baz", "sign": "-", "type": "flat", "value": "bas" },
-      { "key": "baz", "sign": "+", "type": "flat", "value": "bars" },
-      { "key": "foo", "sign": " ", "type": "flat", "value": "bar" },
+    "children": [
       {
+        "key": "baz",
+        "sign": "-",
+        "type": "flat",
+        "value": "bas"
+      },
+      {
+        "key": "baz",
+        "sign": "+",
+        "type": "flat",
+        "value": "bars"
+      },
+      {
+        "key": "foo",
+        "sign": " ",
+        "type": "flat",
+        "value": "bar"
+      },
+      {
+        "children": [
+          {
+            "key": "key",
+            "sign": " ",
+            "type": "flat",
+            "value": "value"
+          }
+        ],
         "key": "nest",
         "sign": "-",
-        "type": "nested",
-        "value": [{ "key": "key", "sign": " ", "type": "flat", "value": "value" }]
+        "type": "nested"
       },
-      { "key": "nest", "sign": "+", "type": "flat", "value": "str" }
-    ]
-  },
-  {
-    "key": "group2",
-    "sign": "-",
-    "type": "nested",
-    "value": [
-      { "key": "abc", "sign": " ", "type": "flat", "value": 12345 },
       {
-        "key": "deep",
-        "sign": " ",
-        "type": "nested",
-        "value": [{ "key": "id", "sign": " ", "type": "flat", "value": 45 }]
+        "key": "nest",
+        "sign": "+",
+        "type": "flat",
+        "value": "str"
       }
-    ]
+    ],
+    "key": "group1",
+    "sign": " ",
+    "type": "nested"
   },
   {
-    "key": "group3",
-    "sign": "+",
-    "type": "nested",
-    "value": [
+    "children": [
       {
-        "key": "deep",
+        "key": "abc",
         "sign": " ",
-        "type": "nested",
-        "value": [
+        "type": "flat",
+        "value": 12345
+      },
+      {
+        "children": [
           {
             "key": "id",
             "sign": " ",
-            "type": "nested",
-            "value": [{ "key": "number", "sign": " ", "type": "flat", "value": 45 }]
+            "type": "flat",
+            "value": 45
           }
-        ]
-      },
-      { "key": "fee", "sign": " ", "type": "flat", "value": 100500 }
-    ]
+        ],
+        "key": "deep",
+        "sign": " ",
+        "type": "nested"
+      }
+    ],
+    "key": "group2",
+    "sign": "-",
+    "type": "nested"
   },
-  { "key": "group4", "sign": "-", "type": "flat", "value": "string" },
+  {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "key": "number",
+                "sign": " ",
+                "type": "flat",
+                "value": 45
+              }
+            ],
+            "key": "id",
+            "sign": " ",
+            "type": "nested"
+          }
+        ],
+        "key": "deep",
+        "sign": " ",
+        "type": "nested"
+      },
+      {
+        "key": "fee",
+        "sign": " ",
+        "type": "flat",
+        "value": 100500
+      }
+    ],
+    "key": "group3",
+    "sign": "+",
+    "type": "nested"
+  },
   {
     "key": "group4",
+    "sign": "-",
+    "type": "flat",
+    "value": "string"
+  },
+  {
+    "children": [
+      {
+        "key": "text",
+        "sign": " ",
+        "type": "flat",
+        "value": "Hidden"
+      }
+    ],
+    "key": "group4",
     "sign": "+",
-    "type": "nested",
-    "value": [{ "key": "text", "sign": " ", "type": "flat", "value": "Hidden" }]
+    "type": "nested"
   }
 ]

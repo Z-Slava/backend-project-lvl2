@@ -1,28 +1,71 @@
 import _ from 'lodash';
 import json from '../../src/formatters/json.js';
 
-describe('Test plain formatter', () => {
-  test('Should return json when called with valid ast 1', () => {
-    const expected = [
+const flatAst = [
+  {
+    type: 'flat',
+    key: 'first_key',
+    value: 'hello world',
+    sign: '+',
+  },
+  {
+    type: 'flat',
+    key: 'second_key',
+    value: 'goodby world',
+    sign: '-',
+  },
+  {
+    type: 'flat',
+    key: 'third_key',
+    value: 'stable world',
+    sign: ' ',
+  },
+];
+
+const nestedAst = [
+  {
+    type: 'nested',
+    key: 'first_key',
+    children: [
       {
         type: 'flat',
-        key: 'first_key',
-        value: 'hello world',
-        sign: '+',
+        key: 'inner_key',
+        value: 'inner world',
+        sign: ' ',
       },
+    ],
+    sign: '+',
+  },
+  {
+    type: 'flat',
+    key: 'second_key',
+    value: 'goodby world',
+    sign: '-',
+  },
+  {
+    type: 'nested',
+    key: 'third_key',
+    children: [
       {
         type: 'flat',
-        key: 'second_key',
+        key: 'inner_key1',
         value: 'goodby world',
         sign: '-',
       },
       {
         type: 'flat',
-        key: 'third_key',
-        value: 'stable world',
-        sign: ' ',
+        key: 'inner_key2',
+        value: 'hello world',
+        sign: '+',
       },
-    ];
+    ],
+    sign: ' ',
+  },
+];
+
+describe('Test json formatter', () => {
+  test('Should return json when called with valid ast 1', () => {
+    const expected = _.cloneDeep(flatAst);
 
     const actual = json(expected);
 
@@ -30,72 +73,14 @@ describe('Test plain formatter', () => {
   });
 
   test('Should return json when called with valid ast 2', () => {
-    const expected = [
-      {
-        type: 'nested',
-        key: 'first_key',
-        value: [
-          {
-            type: 'flat',
-            key: 'inner_key',
-            value: 'inner world',
-            sign: ' ',
-          },
-        ],
-        sign: '+',
-      },
-      {
-        type: 'flat',
-        key: 'second_key',
-        value: 'goodby world',
-        sign: '-',
-      },
-      {
-        type: 'nested',
-        key: 'third_key',
-        value: [
-          {
-            type: 'flat',
-            key: 'inner_key1',
-            value: 'goodby world',
-            sign: '-',
-          },
-          {
-            type: 'flat',
-            key: 'inner_key2',
-            value: 'hello world',
-            sign: '+',
-          },
-        ],
-        sign: ' ',
-      },
-    ];
+    const expected = _.cloneDeep(nestedAst);
 
     const actual = json(expected);
 
     expect(actual).toEqual(expected);
   });
   test('Should be immutable', () => {
-    const ast = [
-      {
-        type: 'flat',
-        key: 'first_key',
-        value: 'hello world',
-        sign: '+',
-      },
-      {
-        type: 'flat',
-        key: 'second_key',
-        value: 'goodby world',
-        sign: '-',
-      },
-      {
-        type: 'flat',
-        key: 'third_key',
-        value: 'stable world',
-        sign: ' ',
-      },
-    ];
+    const ast = _.cloneDeep(nestedAst);
     const expected = _.cloneDeep(ast);
 
     const actual = json(ast);

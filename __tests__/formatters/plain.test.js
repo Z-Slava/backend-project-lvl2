@@ -44,7 +44,7 @@ describe('Test plain formatter', () => {
       {
         type: 'nested',
         key: 'first_key',
-        value: [
+        children: [
           {
             type: 'flat',
             key: 'inner_key',
@@ -63,7 +63,7 @@ describe('Test plain formatter', () => {
       {
         type: 'nested',
         key: 'third_key',
-        value: [
+        children: [
           {
             type: 'flat',
             key: 'inner_key1',

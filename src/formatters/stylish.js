@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isNestedDiffNode } from '../getDiffAST.js';
 
 const stylish = (diff) => {
   const iter = (currentDiff, keyPadding = 2, bracketPadding = 0) => {
@@ -6,15 +6,16 @@ const stylish = (diff) => {
       return '{}';
     }
 
-    const result = currentDiff.reduce((acc, { key, value, sign }) => {
+    const result = currentDiff.reduce((acc, node) => {
+      const { key, sign } = node;
       const signedKey = `${sign} ${key}`;
 
-      if (_.isObject(value)) {
-        const nestedObject = iter(value, keyPadding + 4, bracketPadding + 4);
+      if (isNestedDiffNode(node)) {
+        const nestedObject = iter(node.children, keyPadding + 4, bracketPadding + 4);
         return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${nestedObject}\n`;
       }
 
-      return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${value}\n`;
+      return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${node.value}\n`;
     }, '');
 
     const wrapper = `{\n${result}${' '.repeat(bracketPadding)}}`;

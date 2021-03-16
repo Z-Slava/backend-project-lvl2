@@ -7,15 +7,17 @@ const createFlatDiffNode = (key, value, sign) => ({
   sign,
 });
 
-const createNestedDiffNode = (key, value, sign, optionalProps) => ({
+const createNestedDiffNode = (key, children, sign, optionalProps = {}) => ({
   type: 'nested',
   key,
-  value: _.cloneDeep(value),
+  children: _.cloneDeep(children),
   sign,
   ...optionalProps,
 });
 
-const isNestedDiffNode = ({ type }) => type === 'nested';
+export const isNestedDiffNode = ({ type }) => type === 'nested';
+
+export const isUntouchedDiffNode = ({ sign }) => sign === ' ';
 
 const getDeletedKeys = (originalKeys, modifiedKeys) => _.difference(originalKeys, modifiedKeys);
 const getAddedKeys = (originalKeys, modifiedKeys) => _.difference(modifiedKeys, originalKeys);
@@ -111,9 +113,9 @@ const getDiffAST = (originalJson, modifiedJson) => {
 
   return sortedResult.map((node) => {
     if (isNestedDiffNode(node)) {
-      const { key, value, valueToCompare, sign } = node;
-      const flattenValue = getDiffAST(valueToCompare, value);
-      return createNestedDiffNode(key, flattenValue, sign);
+      const { key, children, valueToCompare, sign } = node;
+      const flattenChildren = getDiffAST(valueToCompare, children);
+      return createNestedDiffNode(key, flattenChildren, sign);
     }
 
     return node;
