@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { isNestedDiffNode, isUntouchedDiffNode } from '../getDiffAST.js';
+import { isUntouchedDiffNode, isExtendableDiffNode, getDiffNodeValue } from '../getDiffAST.js';
 
 const normalizeValue = (value) => {
   if (_.isString(value)) {
@@ -21,13 +21,11 @@ const actions = {
 const getFlatDiff = (nodes, currentProp = '') =>
   nodes.reduce((acc, node) => {
     const { key, sign } = node;
-    if (isNestedDiffNode(node) && isUntouchedDiffNode(node)) {
+    if (isExtendableDiffNode(node)) {
       return [...acc, ...getFlatDiff(node.children, `${currentProp}${key}.`)];
     }
 
-    const value = isNestedDiffNode(node) ? node.children : node.value;
-
-    return [...acc, { prop: `${currentProp}${key}`, value, sign }];
+    return [...acc, { prop: `${currentProp}${key}`, value: getDiffNodeValue(node), sign }];
   }, []);
 
 const removeUnchengedProps = (flatDiff) => flatDiff.filter((node) => !isUntouchedDiffNode(node));

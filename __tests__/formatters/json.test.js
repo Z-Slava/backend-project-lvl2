@@ -75,7 +75,7 @@ describe('Test json formatter', () => {
   test('Should return json when called with valid ast 1', () => {
     const expected = _.cloneDeep(flatAst);
 
-    const data = json(expected);
+    const data = json(flatAst);
     const actual = JSON.parse(data);
 
     expect(actual).toEqual(expected);
@@ -84,7 +84,7 @@ describe('Test json formatter', () => {
   test('Should return json when called with valid ast 2', () => {
     const expected = _.cloneDeep(nestedAst);
 
-    const data = json(expected);
+    const data = json(nestedAst);
     const actual = JSON.parse(data);
 
     expect(actual).toEqual(expected);

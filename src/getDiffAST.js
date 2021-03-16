@@ -19,6 +19,10 @@ export const isNestedDiffNode = ({ type }) => type === 'nested';
 
 export const isUntouchedDiffNode = ({ sign }) => sign === ' ';
 
+export const isExtendableDiffNode = (node) => isNestedDiffNode(node) && isUntouchedDiffNode(node);
+
+export const getDiffNodeValue = (node) => isNestedDiffNode(node) ? node.children : node.value;
+
 const getDeletedKeys = (originalKeys, modifiedKeys) => _.difference(originalKeys, modifiedKeys);
 const getAddedKeys = (originalKeys, modifiedKeys) => _.difference(modifiedKeys, originalKeys);
 const getCommonKeys = (originalKeys, modifiedKeys) => _.intersection(originalKeys, modifiedKeys);
