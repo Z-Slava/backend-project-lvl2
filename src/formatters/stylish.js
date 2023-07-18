@@ -18,8 +18,7 @@ const stylish = (diff) => {
       return `${acc}${' '.repeat(keyPadding)}${signedKey}: ${node.value}\n`;
     }, '');
 
-    const wrapper = `{\n${result}${' '.repeat(bracketPadding)}}`;
-    return wrapper;
+    return `{\n${result}${' '.repeat(bracketPadding)}}`;
   };
 
   return iter(diff);

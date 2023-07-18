@@ -64,9 +64,9 @@ describe('Test getParsedFile function', () => {
   test('Should throw error for not supported extenstion', () => {
     const fileName = 'nested-diff.txt';
     const file = readFile(fileName);
-    const extention = extname(fileName);
+    const extension = extname(fileName);
 
-    expect(() => getParsedFile(file, extention)).toThrow();
+    expect(() => getParsedFile(file, extension)).toThrow();
   });
 
   test('Should return json by default', () => {

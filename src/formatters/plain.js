@@ -15,27 +15,22 @@ const actions = {
   '-': (prop) => `Property '${prop}' was removed`,
   '+': (prop, value) => `Property '${prop}' was added with value: ${normalizeValue(value)}`,
   '-+': (prop, value, prevValue) => {
-    const normilizedPropMessage = `Property '${prop}' was updated.`;
-    const normilizedDiffMessage = `From ${normalizeValue(prevValue)} to ${normalizeValue(value)}`;
-    const resultMessage = `${normilizedPropMessage} ${normilizedDiffMessage}`;
-    return resultMessage;
+    const normalizedPropMessage = `Property '${prop}' was updated.`;
+    const normalizedDiffMessage = `From ${normalizeValue(prevValue)} to ${normalizeValue(value)}`;
+    return `${normalizedPropMessage} ${normalizedDiffMessage}`;
   },
 };
 
-const getFlatDiff = (nodes, currentProp = '') => {
-  const result = nodes.reduce((acc, node) => {
-    const { key, sign } = node;
-    if (isExtendableDiffNode(node)) {
-      return [...acc, ...getFlatDiff(node.children, `${currentProp}${key}.`)];
-    }
+const getFlatDiff = (nodes, currentProp = '') => nodes.reduce((acc, node) => {
+  const { key, sign } = node;
+  if (isExtendableDiffNode(node)) {
+    return [...acc, ...getFlatDiff(node.children, `${currentProp}${key}.`)];
+  }
 
-    return [...acc, { prop: `${currentProp}${key}`, value: getDiffNodeValue(node), sign }];
-  }, []);
+  return [...acc, { prop: `${currentProp}${key}`, value: getDiffNodeValue(node), sign }];
+}, []);
 
-  return result;
-};
-
-const removeUnchengedProps = (flatDiff) => flatDiff.filter((node) => !isUntouchedDiffNode(node));
+const removeUnchangedProps = (flatDiff) => flatDiff.filter((node) => !isUntouchedDiffNode(node));
 
 const mergeUpdatedProps = (flatDiff) => {
   const [initValue, rest] = [_.head(flatDiff), _.tail(flatDiff)];
@@ -65,7 +60,7 @@ const mergeUpdatedProps = (flatDiff) => {
 
 const plain = (diff) => {
   const flatDiff = getFlatDiff(diff);
-  const onlyModifiedProps = removeUnchengedProps(flatDiff);
+  const onlyModifiedProps = removeUnchangedProps(flatDiff);
   const preparedData = mergeUpdatedProps(onlyModifiedProps);
 
   return preparedData

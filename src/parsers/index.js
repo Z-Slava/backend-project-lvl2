@@ -1,6 +1,6 @@
 import yaml from 'js-yaml';
 
-const exts = [
+const extensions = [
   {
     names: ['.yaml', '.yml'],
     parser: yaml.load,
@@ -11,16 +11,16 @@ const exts = [
   },
 ];
 
-const getParser = (extName) => exts.find(({ names }) => names.includes(extName)) || {};
+const getParser = (extName) => extensions.find(({ names }) => names.includes(extName)) || {};
 
-const getParserdFile = (file, options = { ext: '.json' }) => {
+const getParsedFile = (file, options = { ext: '.json' }) => {
   const { parser } = getParser(options.ext);
 
   if (!parser) {
-    throw Error(`Files with ${options.ext} extention are not supported`);
+    throw Error(`Files with ${options.ext} extension are not supported`);
   }
 
   return parser(file);
 };
 
-export default getParserdFile;
+export default getParsedFile;
